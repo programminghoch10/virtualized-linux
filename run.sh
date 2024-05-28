@@ -23,6 +23,7 @@ podman container rm --force --volumes "$CONTAINERNAME"
 podman build \
     -t $IMAGENAME \
     --layers \
+    --arch=$(uname -m) \
     .
 
 podman image ls localhost/$IMAGENAME
