@@ -1,0 +1,9 @@
+/* Allow members of the sudo group to execute any actions
+ * without password authentication, similar to "sudo NOPASSWD:"
+ * https://wiki.archlinux.org/title/Polkit#Globally
+ */
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("sudo")) {
+        return polkit.Result.YES;
+    }
+});

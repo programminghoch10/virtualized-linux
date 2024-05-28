@@ -33,6 +33,7 @@ RUN useradd \
     --groups sudo,pulse-access \
     user
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+ADD polkit.rules /etc/polkit-1/rules.d/49-nopasswd_global.rules
 
 # setup console autologin
 RUN sed -i -e 's|^ExecStart=-/sbin/agetty .*$|ExecStart=-/sbin/agetty --autologin root -o "-f -p -- \\u" --noclear - |' /usr/lib/systemd/system/console-getty.service
