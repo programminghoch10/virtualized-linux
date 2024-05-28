@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y \
-        nano pulseaudio openssh-server \
+        bash nano pulseaudio openssh-server \
         xserver-xorg-core xserver-xorg-video-fbdev xserver-xorg-video-dummy \
         x11-xserver-utils x11-utils \
         xrdp xorgxrdp tigervnc-standalone-server \
@@ -32,6 +32,9 @@ RUN useradd \
     --groups sudo,pulse-access \
     user
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# setup console autologin
+RUN sed -i -e 's|^ExecStart=-/sbin/agetty .*$|ExecStart=-/sbin/agetty --autologin root -o "-f -p -- \\u" --noclear - |' /usr/lib/systemd/system/console-getty.service
 
 WORKDIR /home/user
 
