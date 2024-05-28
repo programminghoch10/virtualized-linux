@@ -22,6 +22,10 @@ RUN apt-get update \
         task-kde-desktop \
     && rm -rf /var/lib/apt/lists/*
 
+# remove features which are not useful in containers
+RUN apt-get purge --autoremove -y \
+    network-manager bluedevil bolt \
+    kwalletmanager plasma-vault kdeconnect powerdevil kup-backup
 
 RUN echo 'root:root' | chpasswd
 
