@@ -4,16 +4,17 @@ MAINTAINER programminghoch10
 # Tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
-# update and install tools
+# update and install system
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
-    && apt-get install -y \
+    && apt-get install -y --install-recommends \
         bash nano pulseaudio openssh-server \
         xserver-xorg-core xserver-xorg-video-fbdev xserver-xorg-video-dummy \
         x11-xserver-utils x11-utils \
         xrdp xorgxrdp tigervnc-standalone-server \
         xvfb \
         git nano neofetch sudo htop \
+	    mpv ffmpeg vlc \
         systemd systemd-sysv \
         task-ssh-server \
         task-desktop \
