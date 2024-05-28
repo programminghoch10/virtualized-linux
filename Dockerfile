@@ -4,11 +4,12 @@ MAINTAINER programminghoch10
 # Tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
-# update and install system
+# update and install packages
+RUN echo 'deb http://deb.debian.org/debian/ bookworm-backports main' > /etc/apt/sources.list.d/debian-bookworm-backports.list
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y --install-recommends \
-        bash nano pulseaudio openssh-server \
+        bash nano pipewire-audio pipewire-module-xrdp openssh-server \
         xserver-xorg-core xserver-xorg-video-fbdev xserver-xorg-video-dummy \
         x11-xserver-utils x11-utils \
         xrdp xorgxrdp tigervnc-standalone-server \
@@ -21,8 +22,6 @@ RUN apt-get update \
         task-kde-desktop \
     && rm -rf /var/lib/apt/lists/*
 
-# setup pulse audio
-RUN adduser root pulse-access
 
 RUN echo 'root:root' | chpasswd
 
@@ -30,7 +29,7 @@ RUN useradd \
     --shell /bin/bash \
     --create-home \
     --password "$(openssl passwd -1 user)" \
-    --groups sudo,pulse-access \
+    --groups sudo \
     user
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ADD polkit.rules /etc/polkit-1/rules.d/49-nopasswd_global.rules
