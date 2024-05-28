@@ -9,7 +9,7 @@ CONTAINERNAME="virtualized-linux"
 CONTAINER_ARGS=(
     --name "$CONTAINERNAME"
     --publish 3389:3389
-    --pull never
+    --pull newer
     --tty
     --rm
     --interactive
