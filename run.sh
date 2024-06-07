@@ -9,7 +9,6 @@ CONTAINERNAME="virtualized-linux"
 CONTAINER_ARGS=(
     --name "$CONTAINERNAME"
     --publish 3389:3389
-    --pull newer
     --tty
     --rm
     --interactive
@@ -22,6 +21,7 @@ podman container rm --force --volumes "$CONTAINERNAME"
 
 podman build \
     -t $IMAGENAME \
+    --pull=newer \
     --layers \
     --arch=$(uname -m) \
     .
