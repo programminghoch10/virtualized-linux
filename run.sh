@@ -26,7 +26,7 @@ podman build \
     --arch=$(uname -m) \
     .
 
-podman image ls localhost/$IMAGENAME
+podman image inspect localhost/"$IMAGE_NAME" -f '{{ .Size }} {{ index .RepoTags 0 }}' | numfmt --to=si
 
 podman container run \
     "${CONTAINER_ARGS[@]}" \
