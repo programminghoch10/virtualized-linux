@@ -28,8 +28,10 @@ RUN apt-get purge --autoremove -y \
     network-manager bluedevil bolt \
     kwalletmanager plasma-vault kdeconnect powerdevil kup-backup
 
+# change the root password
 RUN echo 'root:root' | chpasswd
 
+# setup user sudo access
 RUN useradd \
     --shell /bin/bash \
     --create-home \
@@ -47,4 +49,4 @@ WORKDIR /home/user
 EXPOSE 3389
 EXPOSE 22
 
-CMD ["/lib/systemd/systemd"]
+CMD [ "/lib/systemd/systemd" ]
