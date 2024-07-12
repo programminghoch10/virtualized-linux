@@ -2,7 +2,7 @@ FROM debian
 MAINTAINER programminghoch10
 
 # Tell debconf to run in non-interactive mode
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 # update and install packages
 RUN echo 'deb http://deb.debian.org/debian/ bookworm-backports main' > /etc/apt/sources.list.d/debian-bookworm-backports.list
