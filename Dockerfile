@@ -15,11 +15,12 @@ RUN apt-get update \
         xrdp xorgxrdp tigervnc-standalone-server \
         xvfb \
         git nano neofetch sudo htop \
-	    mpv ffmpeg vlc \
         systemd systemd-sysv \
         task-ssh-server \
         task-desktop \
         task-kde-desktop \
+	    mpv ffmpeg vlc \
+        firefox-esr chromium \
     && rm -rf /var/lib/apt/lists/*
 
 # remove features which are not useful in containers
