@@ -6,6 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # update and install packages
 RUN echo 'deb http://deb.debian.org/debian/ bookworm-backports main' > /etc/apt/sources.list.d/debian-bookworm-backports.list
+RUN echo 'deb http://deb.debian.org/debian/ bullseye bullseye-backports main' > /etc/apt/sources.list.d/debian-bullseye.list
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y --install-recommends \
@@ -21,6 +22,7 @@ RUN apt-get update \
         task-kde-desktop \
 	    mpv ffmpeg vlc \
         firefox-esr chromium \
+        adb scrcpy \
     && rm -rf /var/lib/apt/lists/*
 
 # remove features which are not useful in containers
