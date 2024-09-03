@@ -17,6 +17,9 @@ CONTAINER_ARGS=(
     --systemd=true
 )
 
+[ ! -d share ] && mkdir share
+CONTAINER_ARGS+=(--mount type=bind,src="$PWD"/share,dst=/share)
+
 podman container rm --force --volumes "$CONTAINERNAME"
 
 podman build \
