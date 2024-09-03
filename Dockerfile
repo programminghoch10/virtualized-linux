@@ -5,8 +5,8 @@ MAINTAINER programminghoch10
 ARG DEBIAN_FRONTEND=noninteractive
 
 # update and install packages
-RUN echo 'deb http://deb.debian.org/debian/ bookworm-backports main' > /etc/apt/sources.list.d/debian-bookworm-backports.list
-RUN echo 'deb http://deb.debian.org/debian/ bullseye bullseye-backports main' > /etc/apt/sources.list.d/debian-bullseye.list
+RUN sed -i 's/Components: main/Components: main contrib non-free/' /etc/apt/sources.list.d/debian.sources
+COPY debian.sources /etc/apt/sources.list.d/additional-debian.sources
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y --install-recommends \
