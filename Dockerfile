@@ -23,6 +23,8 @@ RUN apt-get update \
 	    mpv ffmpeg vlc \
         firefox-esr chromium \
         adb scrcpy \
+        kicad \
+        gimp \
     && rm -rf /var/lib/apt/lists/*
 
 # remove features which are not useful in containers
