@@ -31,6 +31,7 @@ podman build \
 
 podman image inspect localhost/"$IMAGE_NAME" -f '{{ .Size }} {{ index .RepoTags 0 }}' | numfmt --to=si
 
+exec \
 podman container run \
     "${CONTAINER_ARGS[@]}" \
     localhost/$IMAGENAME \
