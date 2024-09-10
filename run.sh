@@ -29,7 +29,7 @@ podman build \
     --arch=$(uname -m) \
     .
 
-podman image inspect localhost/"$IMAGE_NAME" -f '{{ .Size }} {{ index .RepoTags 0 }}' | numfmt --to=si
+podman image inspect localhost/"$IMAGENAME" -f '{{ .Size }} {{ index .RepoTags 0 }}' | numfmt --to=si
 
 exec \
 podman container run \

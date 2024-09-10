@@ -4,33 +4,40 @@ MAINTAINER programminghoch10
 # Tell debconf to run in non-interactive mode
 ARG DEBIAN_FRONTEND=noninteractive
 
-# update and install packages
+# update and install base system
 RUN sed -i 's/Components: main/Components: main contrib non-free/' /etc/apt/sources.list.d/debian.sources
 COPY debian.sources /etc/apt/sources.list.d/additional-debian.sources
 RUN apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y --install-recommends \
-        bash nano pipewire-audio pipewire-module-xrdp openssh-server \
+        bash nano sudo htop \
+        pipewire-audio pipewire-module-xrdp openssh-server \
         xserver-xorg-core xserver-xorg-video-fbdev xserver-xorg-video-dummy \
         x11-xserver-utils x11-utils \
         xrdp xorgxrdp tigervnc-standalone-server \
         xvfb \
-        git nano neofetch sudo htop \
         systemd systemd-sysv \
         task-ssh-server \
         task-desktop \
         task-kde-desktop \
-	    mpv ffmpeg vlc \
-        firefox-esr chromium \
-        adb scrcpy \
-        kicad \
-        gimp \
     && rm -rf /var/lib/apt/lists/*
 
 # remove features which are not useful in containers
 RUN apt-get purge --autoremove -y \
     network-manager bluedevil bolt \
     kwalletmanager plasma-vault kdeconnect powerdevil kup-backup
+
+# install additional software
+RUN apt-get update \
+    && apt-get install -y --install-recommends \
+        git neofetch \
+	    mpv ffmpeg vlc \
+        firefox-esr chromium \
+        adb scrcpy \
+        kicad \
+        gimp \
+        wine wine-binfmt \
+    && rm -rf /var/lib/apt/lists/*
 
 # change the root password
 RUN echo 'root:root' | chpasswd
