@@ -30,11 +30,13 @@ RUN apt-get purge --autoremove -y \
 # install additional software
 RUN apt-get update \
     && apt-get install -y --install-recommends \
-        git neofetch \
-	    mpv ffmpeg vlc \
+        git neofetch p7zip-full \
+        ffmpeg yt-dlp \
+	    mpv vlc \
         firefox-esr chromium \
         adb scrcpy \
         kicad \
+        kdenlive \
         gimp \
         wine wine-binfmt \
     && rm -rf /var/lib/apt/lists/*
