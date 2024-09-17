@@ -31,6 +31,7 @@ RUN apt-get purge --autoremove -y \
 RUN apt-get update \
     && apt-get install -y --install-recommends \
         git neofetch p7zip-full \
+        default-jdk \
         ffmpeg yt-dlp \
 	    mpv vlc \
         firefox-esr chromium \
