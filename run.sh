@@ -8,6 +8,7 @@ CONTAINERNAME="virtualized-linux"
 
 CONTAINER_ARGS=(
     --name "$CONTAINERNAME"
+    --hostname "$CONTAINERNAME"
     --publish 3389:3389
     --tty
     --rm
