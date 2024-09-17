@@ -59,7 +59,28 @@ RUN sed -i -e 's|^ExecStart=-/sbin/agetty .*$|ExecStart=-/sbin/agetty --autologi
 RUN sed -i -e 's|^\(ExecStart=.*\)$|\1\nExecStop=systemctl poweroff|' /usr/lib/systemd/system/console-getty.service
 
 # disable kscreenlocker
-RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kscreenlockerrc --group Daemon --key Autolock false
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kscreenlockerrc --group Daemon --key Autolock --type bool false
+
+# switch from single click to double click to open elements
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key SingleClick --type bool false
+
+# disable Animations (improves remote desktop performance)
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key AnimationDurationFactor 0
+
+# enable Ctrl-Alt-T to run Konsole
+RUN test "$(kreadconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1 --key Name)" = Examples \
+    && kwriteconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1 --key Enabled --type bool true \
+    && test "$(kreadconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1_3Actions0 --key CommandURL)" = konsole \
+    && kwriteconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1_3 --key Enabled --type bool true
+
+# switch to KDE dark theme
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop
+
+# disable logout confirmation
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key confirmLogout --type bool false \
+
+# fix permissions on newly created configuration files
+RUN chmod 644 /usr/share/desktop-base/kf5-settings/*
 
 WORKDIR /home/user
 
