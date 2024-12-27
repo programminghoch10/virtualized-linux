@@ -25,7 +25,8 @@ RUN apt-get update \
 # remove features which are not useful in containers
 RUN apt-get purge --autoremove -y \
     network-manager bluedevil bolt \
-    kwalletmanager plasma-vault kdeconnect powerdevil kup-backup
+    kwalletmanager libpam-kwallet5 plasma-vault \
+    kdeconnect powerdevil kup-backup
 
 # install additional software
 RUN apt-get update \
