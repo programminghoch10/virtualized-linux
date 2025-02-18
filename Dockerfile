@@ -80,7 +80,10 @@ RUN test "$(kreadconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Dat
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop
 
 # disable logout confirmation
-RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key confirmLogout --type bool false \
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key confirmLogout --type bool false 
+
+# start with empty session
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key loginMode emptySession
 
 # fix permissions on newly created configuration files
 RUN chmod 644 /usr/share/desktop-base/kf5-settings/*
