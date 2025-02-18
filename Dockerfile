@@ -26,7 +26,8 @@ RUN apt-get update \
 RUN apt-get purge --autoremove -y \
     network-manager bluedevil bolt \
     kwalletmanager libpam-kwallet5 plasma-vault \
-    kdeconnect powerdevil kup-backup
+    kdeconnect powerdevil kup-backup \
+    plasma-discover
 
 # install additional software
 RUN apt-get update \
@@ -63,6 +64,12 @@ RUN sed -i -e 's|^\(ExecStart=.*\)$|\1\nExecStop=systemctl poweroff|' /usr/lib/s
 
 # disable kscreenlocker
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kscreenlockerrc --group Daemon --key Autolock --type bool false
+
+# disable application launcher software integration (doesn't work when plasma-discover is not installed)
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/krunnerrc --group Plugins --key appstreamEnabled --type bool false
+
+# remove plasma discover from default taskbar applications
+RUN sed -i -e 's|,applications:org\.kde\.discover\.desktop||' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml
 
 # switch from single click to double click to open elements
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key SingleClick --type bool false
