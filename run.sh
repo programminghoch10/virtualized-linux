@@ -21,13 +21,16 @@ CONTAINER_ARGS=(
     --uidmap 0:1:$uid
     --uidmap $(($uid + 1)):$(($uid + 1)):$(($subuidsize - $uid))
     --pids-limit -1
-    --systemd=true
+    --volume virtualized-linux-home:/home/user
 )
 
 [ ! -d share ] && mkdir share
 CONTAINER_ARGS+=(--mount type=bind,src="$PWD"/share,dst=/share)
 
-podman container rm --force --volumes "$CONTAINERNAME"
+podman container rm \
+    --force \
+    --volumes \
+    "$CONTAINERNAME"
 
 podman build \
     -t $IMAGENAME \

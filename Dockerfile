@@ -88,6 +88,7 @@ RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --grou
 # fix permissions on newly created configuration files
 RUN chmod 644 /usr/share/desktop-base/kf5-settings/*
 
+VOLUME /home/user
 WORKDIR /home/user
 
 EXPOSE 3389
