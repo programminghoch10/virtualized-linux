@@ -6,6 +6,9 @@ cd "$(dirname "$0")"
 IMAGENAME="virtualized-linux"
 CONTAINERNAME="virtualized-linux"
 
+uid=$(id -u)
+subuidsize=$(cat /etc/subuid | grep "^$(id -un):" | cut -d: -f3)
+
 CONTAINER_ARGS=(
     --name "$CONTAINERNAME"
     --hostname "$CONTAINERNAME"
@@ -14,6 +17,9 @@ CONTAINER_ARGS=(
     --rm
     --interactive
     --shm-size=8G
+    --uidmap $uid:0:1
+    --uidmap 0:1:$uid
+    --uidmap $(($uid + 1)):$(($uid + 1)):$(($subuidsize - $uid))
     --pids-limit -1
     --systemd=true
 )
