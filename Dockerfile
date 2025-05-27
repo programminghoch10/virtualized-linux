@@ -39,6 +39,7 @@ RUN apt-get update \
         firefox-esr chromium \
         adb scrcpy \
         kicad \
+        freecad \
         kdenlive \
         gimp \
 	    audacity \
