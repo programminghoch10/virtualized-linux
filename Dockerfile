@@ -41,7 +41,7 @@ RUN apt-get update \
         kicad \
         freecad \
         kdenlive \
-        gimp \
+        gimp inkscape\
 	    audacity \
         wine wine-binfmt \
     && rm -rf /var/lib/apt/lists/*
