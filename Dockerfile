@@ -43,6 +43,7 @@ RUN apt-get update \
         kdenlive \
         gimp inkscape\
 	    audacity \
+        blender \
         wine wine-binfmt \
     && rm -rf /var/lib/apt/lists/*
 
