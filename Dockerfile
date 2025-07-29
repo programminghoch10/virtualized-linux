@@ -7,7 +7,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 # update and install base system
 RUN sed -i 's/Components: main/Components: main contrib non-free/' /etc/apt/sources.list.d/debian.sources
 COPY debian.sources /etc/apt/sources.list.d/additional-debian.sources
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
     && apt-get full-upgrade --autoremove -y \
     && apt-get install -y --install-recommends \
         bash nano sudo htop \
@@ -19,8 +22,7 @@ RUN apt-get update \
         systemd systemd-sysv \
         task-ssh-server \
         task-desktop \
-        task-kde-desktop \
-    && rm -rf /var/lib/apt/lists/*
+        task-kde-desktop
 
 # remove features which are not useful in containers
 RUN apt-get purge --autoremove -y \
@@ -30,7 +32,10 @@ RUN apt-get purge --autoremove -y \
     plasma-discover
 
 # install additional software
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
     && apt-get install -y --install-recommends \
         git neofetch p7zip-full \
         default-jdk \
@@ -44,8 +49,7 @@ RUN apt-get update \
         gimp inkscape\
 	    audacity \
         blender \
-        wine wine-binfmt \
-    && rm -rf /var/lib/apt/lists/*
+        wine wine-binfmt
 
 # change the root password
 RUN echo 'root:root' | chpasswd
