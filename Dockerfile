@@ -25,7 +25,7 @@ RUN apt-get update \
 # remove features which are not useful in containers
 RUN apt-get purge --autoremove -y \
     network-manager bluedevil bolt \
-    kwalletmanager libpam-kwallet5 plasma-vault \
+    kwalletmanager libpam-kwallet5 plasma-vault gnome-keyring \
     kdeconnect powerdevil kup-backup \
     plasma-discover
 
@@ -90,6 +90,9 @@ RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group
 
 # disable logout confirmation
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key confirmLogout --type bool false 
+
+# disable kwallet
+RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kwalletrc --group Wallet --key Enabled --type bool false
 
 # start with empty session
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key loginMode emptySession
