@@ -21,6 +21,7 @@ CONTAINER_ARGS=(
     --uidmap 0:1:$uid
     --uidmap $(($uid + 1)):$(($uid + 1)):$(($subuidsize - $uid))
     --pids-limit -1
+    --cap-add=CAP_SYS_ADMIN
     --volume virtualized-linux-home:/home/user
 )
 

@@ -1,4 +1,4 @@
-FROM debian
+FROM debian:trixie
 MAINTAINER programminghoch10
 
 # Tell debconf to run in non-interactive mode
@@ -82,12 +82,6 @@ RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group
 
 # disable Animations (improves remote desktop performance)
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key AnimationDurationFactor 0
-
-# enable Ctrl-Alt-T to run Konsole
-RUN test "$(kreadconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1 --key Name)" = Examples \
-    && kwriteconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1 --key Enabled --type bool true \
-    && test "$(kreadconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1_3Actions0 --key CommandURL)" = konsole \
-    && kwriteconfig5 --file /usr/share/khotkeys/kde32b1.khotkeys --group Data_1_3 --key Enabled --type bool true
 
 # switch to KDE dark theme
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop
