@@ -95,6 +95,11 @@ RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/kwalletrc --group 
 # start with empty session
 RUN kwriteconfig5 --file /usr/share/desktop-base/kf5-settings/ksmserverrc --group General --key loginMode emptySession
 
+# enable virtual devices for plasma audio widget
+RUN sed -i \
+    -e '/<entry name="showVirtualDevices" type="Bool">/,/<\/entry>/ s/<default>false<\/default>/<default>true<\/default>/' \
+    /usr/share/plasma/plasmoids/org.kde.plasma.volume/contents/config/main.xml
+
 # fix permissions on newly created configuration files
 RUN chmod 644 /usr/share/desktop-base/kf5-settings/*
 
