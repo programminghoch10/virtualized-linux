@@ -52,13 +52,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         wine wine-binfmt
 
 # change the root password
-RUN echo 'root:root' | chpasswd
+ARG ROOT_PASSWORD=root
+RUN echo "$ROOT_PASSWORD:$ROOT_PASSWORD" | chpasswd
 
 # setup user sudo access
+ARG USER_PASSWORD=user
 RUN useradd \
     --shell /bin/bash \
     --create-home \
-    --password "$(openssl passwd -1 user)" \
+    --password "$(openssl passwd -1 "$USER_PASSWORD")" \
     --groups sudo \
     user
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
