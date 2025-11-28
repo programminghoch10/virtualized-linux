@@ -63,7 +63,7 @@ RUN useradd \
     --password "$(openssl passwd -1 "$USER_PASSWORD")" \
     --groups sudo \
     user
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+ADD nopasswd.sudoers /etc/sudoers.d/99-nopasswd
 ADD polkit.rules /etc/polkit-1/rules.d/49-nopasswd_global.rules
 
 # setup console autologin

@@ -1,0 +1,2 @@
+# allow all users in sudo group to execute commands without entering password
+%sudo ALL=(ALL) NOPASSWD:ALL
