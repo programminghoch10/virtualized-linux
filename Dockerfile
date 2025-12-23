@@ -55,6 +55,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 ARG ROOT_PASSWORD=root
 RUN echo "$ROOT_PASSWORD:$ROOT_PASSWORD" | chpasswd
 
+# setup ssh login
+ADD sshd_*.conf /etc/ssh/sshd_config.d/
+
 # setup user sudo access
 ARG USER_PASSWORD=user
 RUN useradd \
@@ -105,6 +108,7 @@ RUN sed -i \
 # fix permissions on newly created configuration files
 RUN chmod 644 /usr/share/desktop-base/kf5-settings/*
 
+RUN mkdir /home/user/.ssh
 VOLUME /home/user
 WORKDIR /home/user
 

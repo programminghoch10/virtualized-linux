@@ -13,6 +13,7 @@ CONTAINER_ARGS=(
     --name "$CONTAINERNAME"
     --hostname "$CONTAINERNAME"
     --publish 3389:3389
+    --publish 2201:22
     --tty
     --rm
     --interactive
@@ -27,6 +28,12 @@ CONTAINER_ARGS=(
 
 [ ! -d share ] && mkdir share
 CONTAINER_ARGS+=(--mount type=bind,src="$PWD"/share,dst=/share)
+
+[ -f ~/.ssh/authorized_keys ] && \
+    CONTAINER_ARGS+=(
+        --mount type=bind,src="$(echo ~)"/.ssh/authorized_keys,dst=/home/user/.ssh/authorized_keys,readonly
+        --mount type=bind,src="$(echo ~)"/.ssh/authorized_keys,dst=/root/.ssh/authorized_keys,readonly
+    )
 
 podman container rm \
     --force \
