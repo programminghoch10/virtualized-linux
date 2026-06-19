@@ -6,6 +6,10 @@ cd "$(dirname "$0")"
 IMAGENAME="virtualized-linux"
 CONTAINERNAME="virtualized-linux"
 
+TARGET="${1:-debian}"
+DOCKERFILE=Dockerfile."$TARGET"
+[ ! -f "$DOCKERFILE" ] && echo missing dockerfile >&2 && exit 1
+
 uid=$(id -u)
 subuidsize=$(cat /etc/subuid | grep "^$(id -un):" | cut -d: -f3)
 
@@ -41,6 +45,7 @@ podman container rm \
     "$CONTAINERNAME"
 
 podman build \
+    -f "$DOCKERFILE" \
     -t $IMAGENAME \
     --pull=newer \
     --layers \
