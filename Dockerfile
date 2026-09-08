@@ -70,7 +70,7 @@ ADD nopasswd.sudoers /etc/sudoers.d/99-nopasswd
 ADD polkit.rules /etc/polkit-1/rules.d/49-nopasswd_global.rules
 
 # setup console autologin
-RUN sed -i -e 's|^ExecStart=-/sbin/agetty .*$|ExecStart=-/sbin/agetty --autologin root -o "-f -p -- \\u" --noclear - |' /usr/lib/systemd/system/console-getty.service
+RUN sed -i -e 's|^ExecStart=-/sbin/agetty .*$|ExecStart=-/sbin/agetty --autologin root -o "-f -p -- \\\\u" --noclear - |' /usr/lib/systemd/system/console-getty.service
 RUN sed -i -e 's|^\(ExecStart=.*\)$|\1\nExecStop=systemctl poweroff|' /usr/lib/systemd/system/console-getty.service
 
 # disable kscreenlocker
