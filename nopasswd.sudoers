@@ -1,2 +1,3 @@
-# allow all users in sudo group to execute commands without entering password
+# allow all users in sudo/wheel group to execute commands without entering password
 %sudo ALL=(ALL) NOPASSWD:ALL
+%wheel ALL=(ALL) NOPASSWD:ALL

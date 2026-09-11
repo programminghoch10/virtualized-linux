@@ -6,8 +6,8 @@ cd "$(dirname "$0")"
 IMAGENAME="virtualized-linux"
 CONTAINERNAME="virtualized-linux"
 
-TARGET="${1:-debian}"
-DOCKERFILE=Dockerfile."$TARGET"
+BASE="${1:-arch}"
+DOCKERFILE=Dockerfile."$BASE"
 [ ! -f "$DOCKERFILE" ] && echo missing dockerfile >&2 && exit 1
 
 uid=$(id -u)

@@ -1,0 +1,113 @@
+FROM docker.io/archlinux
+MAINTAINER programminghoch10
+
+RUN sed --in-place \
+    --expression 's/^NoProgressBar/#NoProgressBar/' \
+    --expression 's/^#Color/Color/' \
+    /etc/pacman.conf
+
+# ensure a pacman-key exists for later installation steps
+RUN pacman-key --init
+
+# update and install base system
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman --sync --refresh --sysupgrade --noconfirm --needed \
+        bash nano sudo htop less man diffutils \
+        plasma-meta kde-applications-meta \
+        openssh
+
+# setup chaotic-aur for additonal packages
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman-key --init \
+    && pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com \
+    && pacman-key --lsign-key 3056513887B78AEB \
+    && pacman --upgrade --noconfirm --needed \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' \
+    && echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf \
+    && pacman --sync --refresh --sysupgrade --noconfirm --needed
+
+# install and setup X11 and xrdp
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman --sync --refresh --sysupgrade --noconfirm --needed \
+    xorg-server xorg-apps \
+    plasma-x11-session \
+    xrdp xorgxrdp x11vnc \
+    tigervnc \
+    pipewire-module-xrdp
+COPY <<EOF /etc/X11/xinit/xinitrc
+export DESKTOP_SESSION=plasma
+exec /usr/lib/plasma-dbus-run-session-if-needed startplasma-x11
+EOF
+RUN systemctl enable xrdp xrdp-sesman
+
+# disable systemd-firstboot
+RUN systemctl mask systemd-firstboot
+
+# change the root password
+ARG ROOT_PASSWORD=root
+RUN echo "$ROOT_PASSWORD:$ROOT_PASSWORD" | chpasswd
+
+# setup ssh login
+ADD sshd_*.conf /etc/ssh/sshd_config.d/
+
+# setup console autologin
+ARG CONSOLE_AUTOLOGIN_USER=root
+RUN sed -i -e 's|^ExecStart=-\(/[[:alnum:]]\+\)\+/agetty .*$|ExecStart=-\1/agetty --autologin '"$CONSOLE_AUTOLOGIN_USER"' -o "-f -p -- \\u" --noclear - |' /usr/lib/systemd/system/console-getty.service
+RUN sed -i -e 's|^\(ExecStart=.*\)$|\1\nExecStop=systemctl poweroff|' /usr/lib/systemd/system/console-getty.service
+
+# setup timezone
+ARG TZ=Europe/Berlin
+RUN ln -sf /usr/share/zoneinfo/"$TZ" /etc/localtime
+
+# setup user and sudo access
+ARG USER_PASSWORD=user
+RUN useradd \
+    --shell /bin/bash \
+    --create-home \
+    --password "$(openssl passwd -1 "$USER_PASSWORD")" \
+    --groups wheel \
+    user
+ADD nopasswd.sudoers /etc/sudoers.d/99-nopasswd
+ADD polkit.rules /etc/polkit-1/rules.d/49-nopasswd_global.rules
+
+USER user
+WORKDIR /home/user
+
+# disable kscreenlocker
+RUN kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock --type bool false
+
+# disable application launcher software integration (doesn't work when plasma-discover is not installed)
+RUN kwriteconfig6 --file krunnerrc --group Plugins --key appstreamEnabled --type bool false
+
+# switch from single click to double click to open elements
+RUN kwriteconfig6 --file kdeglobals --group KDE --key SingleClick --type bool false
+
+# disable Animations (improves remote desktop performance)
+RUN kwriteconfig6 --file kdeglobals --group KDE --key AnimationDurationFactor 0
+
+# switch to KDE dark theme
+RUN kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop
+
+# disable logout confirmation
+RUN kwriteconfig6 --file ksmserverrc --group General --key confirmLogout --type bool false 
+
+# disable kwallet
+RUN kwriteconfig6 --file kwalletrc --group Wallet --key Enabled --type bool false
+
+# start with empty session
+RUN kwriteconfig6 --file ksmserverrc --group General --key loginMode emptySession
+
+RUN mkdir -p .ssh
+
+USER root
+
+VOLUME /home/user
+
+EXPOSE 3389
+EXPOSE 22
+
+CMD [ "/lib/systemd/systemd" ]

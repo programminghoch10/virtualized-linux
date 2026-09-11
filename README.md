@@ -1,6 +1,6 @@
 # virtualized-linux
 
-This podman container runs a complete systemd debian installation of KDE with xrdp remote access.
+This podman container runs a complete systemd arch/debian installation of KDE with xrdp remote access.
 
 ## Usage
 
