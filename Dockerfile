@@ -1,4 +1,4 @@
-FROM debian:trixie
+FROM docker.io/debian:trixie
 MAINTAINER programminghoch10
 
 # Tell debconf to run in non-interactive mode
