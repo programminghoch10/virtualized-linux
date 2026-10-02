@@ -1,3 +1,41 @@
+FROM docker.io/archlinux AS dummy-builder
+
+# install development packages
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman --sync --refresh --noconfirm --needed \
+        debugedit fakeroot
+
+WORKDIR /build
+RUN chown nobody:nobody .
+USER nobody
+# build dummy package
+COPY <<EOF PKGBUILD
+    # dummy package "providing" every package we dont want
+    pkgname=dummy
+    pkgver=1
+    pkgrel=1
+    arch=(any)
+    provides=(
+        # hardware stuff
+        bluedevil 
+        plasma-nm networkmanager
+        plasma-thunderbolt bolt
+        powerdevil
+
+        # in containers generally unneeded software
+        plasma-welcome
+        kwallet kwallet-pam kwalletmanager plasma-vault
+        kdeconnect
+        discover
+        kbackup
+        flatpak flatpak-kcm
+    )
+EOF
+#RUN env EUID=1 makepkg
+RUN makepkg
+RUN mv dummy*.pkg.tar.zst dummy.pkg.tar.zst
+
 FROM docker.io/archlinux
 MAINTAINER programminghoch10
 
@@ -9,13 +47,24 @@ RUN sed --in-place \
 # ensure a pacman-key exists for later installation steps
 RUN pacman-key --init
 
+RUN \
+    --mount=type=bind,from=dummy-builder,src=/build/dummy.pkg.tar.zst,dst=/dummy.pkg.tar.zst \
+    pacman --upgrade --noconfirm /dummy.pkg.tar.zst 
+
 # update and install base system
 RUN \
     --mount=type=cache,sharing=locked,target=/var/cache/pacman \
     pacman --sync --refresh --sysupgrade --noconfirm --needed \
+        base \
         bash nano sudo htop less man diffutils \
-        plasma-meta kde-applications-meta \
         openssh
+
+# install plasma
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman --sync --refresh --sysupgrade --noconfirm --needed \
+        kde-cli-tools \
+        plasma-desktop
 
 # setup chaotic-aur for additonal packages
 RUN \
@@ -27,7 +76,7 @@ RUN \
         'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
         'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' \
     && echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf \
-    && pacman --sync --refresh --sysupgrade --noconfirm --needed
+    && pacman --sync --refresh --noconfirm --needed chaotic-keyring chaotic-mirrorlist
 
 # install and setup X11 and xrdp
 RUN \
@@ -43,6 +92,15 @@ export DESKTOP_SESSION=plasma
 exec /usr/lib/plasma-dbus-run-session-if-needed startplasma-x11
 EOF
 RUN systemctl enable xrdp xrdp-sesman
+
+# install additional packages
+RUN \
+    --mount=type=cache,sharing=locked,target=/var/cache/pacman \
+    pacman --sync --refresh --noconfirm --needed \
+        plasma-workspace-wallpapers \
+        plasma-meta \
+        kde-applications-meta \
+        chromium
 
 # disable systemd-firstboot
 RUN systemctl mask systemd-firstboot
@@ -78,7 +136,7 @@ USER user
 WORKDIR /home/user
 
 # disable kscreenlocker
-RUN kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock --type bool false
+RUN kwriteconfig6 --file kscreenlockerrc --group Daemon --key Timeout 0
 
 # disable application launcher software integration (doesn't work when plasma-discover is not installed)
 RUN kwriteconfig6 --file krunnerrc --group Plugins --key appstreamEnabled --type bool false
@@ -103,9 +161,8 @@ RUN kwriteconfig6 --file ksmserverrc --group General --key loginMode emptySessio
 
 RUN mkdir -p .ssh
 
-USER root
-
 VOLUME /home/user
+USER root
 
 EXPOSE 3389
 EXPOSE 22
